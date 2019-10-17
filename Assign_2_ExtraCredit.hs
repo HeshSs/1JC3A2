@@ -55,13 +55,105 @@ instance (Integral a) => Ord (GaussianInt a) where
 gaussNorm :: (Integral a, GaussianIntegral g) => g a -> a
 gaussNorm g = gaussReal (gaussMult g (gaussConj g))
 
-maxGaussNorm :: (Integral a, GaussianIntegral g, Eq (g a)) => [g a] -> g a
-maxGaussNorm gs 
-           | gs == [] = gaussZero
-           | (length gs) == 1 = head gs
-           | otherwise = if gaussNorm x0 < gaussNorm x1
-                            then maxGaussNorm ([x1] ++ xs)
-                            else maxGaussNorm ([x0] ++ xs)
-                                    where x0 = head gs
-                                          x1 = head (tail gs)
-                                          xs = tail (tail gs)
+maxGaussNorm :: (Integral a, GaussianIntegral g, Eq (g a), Ord (g a)) => [g a] -> g a
+maxGaussNorm gs = foldr max gaussZero gs
+
+{- -----------------------------------------------------------------
+ - Test Cases
+ - -----------------------------------------------------------------
+ -
+
+ - -----------------------------------------------------------------
+ - - Function: gaussConj
+ - - Test Case Number: 1
+ - - Input: gaussConj (1 :@ 0)
+ - - Expected Output: (1 :@ 0)
+ - - Actual Output: (1 :@ 0)
+ - -----------------------------------------------------------------
+ - - Function: gaussConj
+ - - Test Case Number: 2
+ - - Input: gaussConj (5 :@ 10)
+ - - Expected Output: 5 :@ (-10)
+ - - Actual Output: 5 :@ (-10)
+ - -----------------------------------------------------------------
+ - - Function: gaussConj
+ - - Test Case Number: 3
+ - - Input: gaussConj (1 :@ 5)
+ - - Expected Output: 1 :@ (-5)
+ - - Actual Output: 1 :@ (-5)
+ - -----------------------------------------------------------------
+ - - Function: gaussAdd
+ - - Test Case Number: 1
+ - - Input: gaussAdd (2 : @0) (1 : @2)
+ - - Expected Output: 3 :@ 2
+ - - Actual Output: 3 :@ 2
+ - -----------------------------------------------------------------
+ - - Function: gaussAdd
+ - - Test Case Number: 2
+ - - Input: gaussAdd (3 :@ 2) (1 :@ 2)
+ - - Expected Output: 4 :@ 4
+ - - Actual Output: 4 :@ 4
+ - -----------------------------------------------------------------
+ - - Function: gaussAdd
+ - - Test Case Number: 3
+ - - Input: gaussAdd (1 :@ 2) (3 :@ 4)
+ - - Expected Output: 4 :@ 6
+ - - Actual Output: 4 :@ 6
+ - -----------------------------------------------------------------
+ - - Function: gaussMult
+ - - Test Case Number: 1
+ - - Input: gaussMult (2 :@ 0) (1 :@ 2)
+ - - Expected Output: 2 :@ 4
+ - - Actual Output: 2 :@ 4
+ - -----------------------------------------------------------------
+ - - Function: gaussMult
+ - - Test Case Number: 2
+ - - Input: gaussMult (2 :@ 3) (1 :@ 4)
+ - - Expected Output: (-10) :@ 11
+ - - Actual Output: (-10) :@ 11
+ - -----------------------------------------------------------------
+ - - Function: gaussMult
+ - - Test Case Number: 3
+ - - Input: gaussMult (1:@2) (3:@4)
+ - - Expected Output: (-5) :@ 10
+ - - Actual Output: (-5) :@ 10
+ - -----------------------------------------------------------------
+ - - Function: gaussNorm
+ - - Test Case Number: 1
+ - - Input: gaussNorm (1 :@ 2)
+ - - Expected Output: 5
+ - - Actual Output: 5
+ - -----------------------------------------------------------------
+ - - Function: gaussNorm
+ - - Test Case Number: 2
+ - - Input: gaussNorm (5:@10)
+ - - Expected Output: 125
+ - - Actual Output: 125
+ - -----------------------------------------------------------------
+ - - Function: gaussNorm
+ - - Test Case Number: 3
+ - - Input: gaussNorm (5:@1)
+ - - Expected Output: 26
+ - - Actual Output: 26
+ - -----------------------------------------------------------------
+ - - Function: maxGaussNorm
+ - - Test Case Number: 1
+ - - Input: maxGaussNorm [(3:@6),(1:@3),(3:@5),(7:@1),(6:@4)]
+ - - Expected Output: 6 :@ 4
+ - - Actual Output: 6 :@ 4
+ - -----------------------------------------------------------------
+ - - Function: maxGaussNorm
+ - - Test Case Number: 2
+ - - Input: maxGaussNorm [(1:@2),(1:@3),(6:@5),(3:@4),(3:@3)]
+ - - Expected Output: 6 :@ 5
+ - - Actual Output: 6 :@ 5
+ - -----------------------------------------------------------------
+ - - Function: maxGaussNorm
+ - - Test Case Number: 3
+ - - Input: maxGaussNorm [(5:@3),(1:@3),(3:@5),(3:@4),(3:@3)]
+ - - Expected Output: 5 :@ 3
+ - - Actual Output: 3 :@ 5
+ - -----------------------------------------------------------------
+ 
+ -}
+
